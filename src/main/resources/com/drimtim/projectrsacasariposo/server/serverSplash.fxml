@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_CENTER" prefHeight="157.0" prefWidth="366.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_server.ControllerServerSplash">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+  </padding>
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server" textAlignment="CENTER" wrappingWidth="173.47012901306152">
+         <font>
+            <Font name="Arial Black" size="28.0" />
+         </font>
+      </Text>
+      <Text fx:id="textServerName" strokeType="OUTSIDE" strokeWidth="0.0" text="{hostname}">
+         <font>
+            <Font name="Arial" size="12.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" top="-7.0" />
+         </VBox.margin>
+      </Text>
+      <Text fx:id="textAddress" strokeType="OUTSIDE" strokeWidth="0.0" text="{xxx.xxx.x.x:1201}">
+         <font>
+            <Font name="Arial" size="12.0" />
+         </font>
+      </Text>
+      <StackPane>
+         <children>
+            <ImageView fx:id="imgViewCopy" fitHeight="14.0" fitWidth="15.0" onMouseClicked="#onCopyClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../other/interface/icons/duplicate.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <StackPane.margin>
+                  <Insets left="150.0" top="-25.0" />
+               </StackPane.margin>
+            </ImageView>
+         </children>
+      </StackPane>
+      <Button fx:id="btnAvvia" mnemonicParsing="false" onAction="#onStartClicked" text="Avvia" />
+      <FlowPane alignment="BOTTOM_RIGHT" prefHeight="13.0" prefWidth="326.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="by Drim Studios" textAlignment="CENTER">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Text>
+         </children>
+      </FlowPane>
+   </children>
+</VBox>

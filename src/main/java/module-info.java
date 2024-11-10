@@ -10,7 +10,10 @@ module com.drimtim.projectrsacasariposo {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
-    opens com.drimtim.projectrsacasariposo to javafx.fxml;
-    exports com.drimtim.projectrsacasariposo;
+    opens com.drimtim.projectrsacasariposo.MAIN_client to javafx.fxml;
+    exports com.drimtim.projectrsacasariposo.MAIN_server;
+    exports com.drimtim.projectrsacasariposo.MAIN_client;
+    opens com.drimtim.projectrsacasariposo.MAIN_server to javafx.fxml;
 }
