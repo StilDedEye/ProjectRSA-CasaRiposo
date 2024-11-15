@@ -52,7 +52,8 @@ public class ControllerServerSplash {
     public void onStartClicked () throws IOException {
         Thread threadListeningServer = new Thread(()->{
             try {
-                ServSocket.initializeListening();
+                ServSocket servSocket = new ServSocket();
+                servSocket.initializeListening();
             } catch (IOException e) {throw new RuntimeException(e);}
         });
         threadListeningServer.setName("threadListeningServer");

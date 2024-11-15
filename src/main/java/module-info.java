@@ -11,6 +11,7 @@ module com.drimtim.projectrsacasariposo {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    // Modulo corretto per Selenium
 
     opens com.drimtim.projectrsacasariposo.MAIN_client to javafx.fxml;
     exports com.drimtim.projectrsacasariposo.MAIN_server;
