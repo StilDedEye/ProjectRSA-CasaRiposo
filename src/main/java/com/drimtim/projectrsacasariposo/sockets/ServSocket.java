@@ -18,7 +18,7 @@ public class ServSocket {
 
     // string --> {username, [map]} --> {"socket" socket, "in" in, "out" out}
     public static Map<String, Map<String, Object>> clients = new HashMap<>();
-
+    public static List<String> connectedClients = new ArrayList<String>(); // it saves only usernames
 
 
     public void initializeListening () throws IOException {
@@ -35,6 +35,16 @@ public class ServSocket {
             // the first print from the client is the username
             String username = in.readLine();
 
+            /*If the client gives an already taken username, the connection is refused*/
+            if (clients.containsKey(username)) {
+                System.out.println("Username already used, client disconnected.");
+                out.println(":CONNECTIONREFUSED:usernameAlreadyTaken");
+                s.close();
+                continue;
+            }
+            out.println(":CONNECTIONESTABLISHED:");
+
+            connectedClients.add(username);
             Map<String, Object> streams = new HashMap<>();
             streams.put("socket", s);
             streams.put("in", in);
@@ -51,8 +61,9 @@ public class ServSocket {
 
 
 
-            System.out.println(s.getLocalAddress());
             out.println(":giveAckIpPort:" + s.getLocalAddress() +"-"+s.getPort());
+            out.println(":updatedClientsList:" + adaptClientListToPrint());
+            sendBroadcastMessage (":updatedClientsList:" + adaptClientListToPrint());
             out.println(":pingRequest:");
 
         } while (true);
@@ -82,6 +93,9 @@ public class ServSocket {
                 if (e.getMessage().equals("Connection reset")) {
                     System.err.println("Il client ["+username+"] si è disconnesso");
                     clients.remove(username);
+                    connectedClients.remove(username);
+
+                    sendBroadcastMessage(":updatedClientsList:" + adaptClientListToPrint());
                 }
 
 
@@ -102,5 +116,22 @@ public class ServSocket {
         });
         threadPingRequestDaemon.setName("threadPingRequestDaemon");
         threadPingRequestDaemon.start();
+    }
+
+    private String adaptClientListToPrint () {
+        StringBuilder output = new StringBuilder();  // it should be "username1,username2,username3,username4,... etc"
+        if (connectedClients.isEmpty())
+            return "";
+        for (String client: connectedClients) {
+            output.append(client).append(",");
+        }
+        return output.toString();
+    }
+
+    private void sendBroadcastMessage (String message) {
+        for (String username: connectedClients) {
+            PrintWriter out = (PrintWriter) clients.get(username).get("out");
+            out.println(message);
+        }
     }
 }
