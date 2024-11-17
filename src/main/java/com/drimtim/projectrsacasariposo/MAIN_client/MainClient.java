@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class MainClient extends Application {
 
+    public static Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainClient.class.getResource("/com/drimtim/projectrsacasariposo/client/clientSplash.fxml"));
@@ -22,6 +24,7 @@ public class MainClient extends Application {
             System.exit(0);
         });
         stage.setAlwaysOnTop(true);
+        primaryStage = stage;
     }
 
     public static void main(String[] args) {

@@ -14,6 +14,7 @@ public class CommandsBuilder {
 
     /* For example  with ":pingAnswer:ip-port?username" as input it returns "ip-port"   */
     public static String getCommandSuffix (String command) {
+        System.out.println("LINEA " + command);
         return command.substring(command.indexOf(':',1)).substring(1);
     }
 
