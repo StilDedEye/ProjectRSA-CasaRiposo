@@ -1,13 +1,12 @@
 package com.drimtim.projectrsacasariposo.sockets;
 
+import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
 import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection;
+import com.drimtim.projectrsacasariposo.PRIMENUMBERS.PrimeFetcher;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
 import javafx.application.Platform;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.management.PlatformManagedObject;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -31,13 +30,21 @@ public class ClientSocket {
     private Socket serverSocket;
     private BufferedReader in;
     private PrintWriter out;
+    private DataOutputStream dataOut;
 
     // TODO mettere chiavi
+    private ClientKey publicKey;
+        private byte[] serializedPublicKey;
+    private ClientKey privateKey;
+
+    private ClientKey receiverKey;
+
 
     public boolean configureServerSocket () throws IOException {
         serverSocket = new Socket(serverIp, serverPort);
         in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
         out = new PrintWriter(serverSocket.getOutputStream(), true);
+        dataOut = new DataOutputStream(serverSocket.getOutputStream());
 
         out.println(username);
         if(in.readLine().equals(":CONNECTIONREFUSED:usernameAlreadyTaken")) {
@@ -47,18 +54,25 @@ public class ClientSocket {
             return false;
         } else System.out.println("CONNECTION ESTABLISHED with server " +serverIp + ":" +port);
 
+        // GENERATE A PUBLIC AND PRIVATE KEY
+        generatePrivatePublicKeys();
+        // manda al server la propria chiave pubblica. Prima invia la lunghezza dell'array, poi l'array stesso
+        dataOut.writeInt(serializedPublicKey.length);
+        dataOut.write(serializedPublicKey);
+        System.out.println("CHIAVE INVIATA AL SERVER");
+
         String inputIpPortClient = in.readLine(); // the client gets its own ip + port
         ip = CommandsBuilder.getIpFromAck(inputIpPortClient);
         port = CommandsBuilder.getPortFromAck(inputIpPortClient);
-
+        // receive from the server the connected clients (usernames)
         String clientsAlreadyConnected = in.readLine();
 
-        System.err.println(clientsAlreadyConnected);
+        // according to clientsAlreadyConnected, parse with its own list
         parseConnectedClients (clientsAlreadyConnected);
 
-        System.err.println(Arrays.toString(connectedClients.toArray()));
 
-        // start a continuous listening thread
+
+        // start a listening thread with the server
         initializeListeningThread();
 
         return true;
@@ -109,7 +123,17 @@ public class ClientSocket {
     }
 
 
-
+    private void generatePrivatePublicKeys () {
+        PrimeFetcher keyGenerator = new PrimeFetcher();
+        ClientKey[] keys = keyGenerator.generateKeys();  // [public,private]
+        publicKey = keys[0];
+        privateKey = keys[1];
+        // serializza la chiave pubblica e la salva nell'apposito attributo
+        try
+        {
+            serializedPublicKey = publicKey.serializeKey();
+        } catch (Exception e) {e.printStackTrace();}
+    }
 
 
 

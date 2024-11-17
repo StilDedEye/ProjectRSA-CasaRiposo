@@ -1,10 +1,38 @@
 package com.drimtim.projectrsacasariposo.PRIMENUMBERS;
 
+import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Random;
 
 public class PrimeFetcher {
+
+
+    public ClientKey[] generateKeys () {
+        SecureRandom random = new SecureRandom();
+
+        // Generazione numeri primi p e q
+        BigInteger p = BigInteger.probablePrime(2048, random);
+        BigInteger q = BigInteger.probablePrime(2048, random);
+
+        // Calcolo n=p*q ed m=(p-1)*(q-1)
+        BigInteger n = p.multiply(q);
+        BigInteger m = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+
+        // Calcolo e, coprimo con m (1<e<m)
+        BigInteger e = findCoprime(m);
+
+        // Calcolo d. La classe biginter già prevede il suo calcolo
+        BigInteger d = e.modInverse(m);
+
+        // [E,N] chiave pubblica | [D,N] chiave privata
+        System.out.println("N: " + n);
+        System.out.println("E: " + e);
+        System.out.println("D: " + d);
+
+        return new ClientKey[]{new ClientKey (e,n), new ClientKey (d,n)};
+    }
+
     public static void main(String[] args) {
         SecureRandom random = new SecureRandom();
 
@@ -22,7 +50,7 @@ public class PrimeFetcher {
         // Calcolo d. La classe biginter già prevede il suo calcolo
         BigInteger d = e.modInverse(m);
 
-        // Stampa le chiavi
+        // [E,N] chiave pubblica | [D,N] chiave privata
         System.out.println("N: " + n);
         System.out.println("E: " + e);
         System.out.println("D: " + d);

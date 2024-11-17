@@ -1,11 +1,9 @@
 package com.drimtim.projectrsacasariposo.sockets;
 
+import com.drimtim.projectrsacasariposo.MAIN_server.ClientSerializedPublicKey;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -18,8 +16,8 @@ public class ServSocket {
 
     // string --> {username, [map]} --> {"socket" socket, "in" in, "out" out}
     public static Map<String, Map<String, Object>> clients = new HashMap<>();
-    public static List<String> connectedClients = new ArrayList<String>(); // it saves only usernames
-
+    public static List<String> connectedClients = new ArrayList<>(); // it saves only usernames
+    public static List<ClientSerializedPublicKey> serializedClientsPublicKeys = new ArrayList<>();
 
     public void initializeListening () throws IOException {
         serverSocket = new ServerSocket(port);
@@ -30,6 +28,8 @@ public class ServSocket {
 
             // Crea gli stream
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            DataInputStream inData = new DataInputStream(s.getInputStream());
+
             PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 
             // the first print from the client is the username
@@ -44,27 +44,33 @@ public class ServSocket {
             }
             out.println(":CONNECTIONESTABLISHED:");
 
+            /* visto che la connessione è stata stabilita, ora riceverà la chiave pubblica dal client
+            * e se la salverà, associandola all'username*/
+            int keyLength = inData.readInt();
+            byte[] serializedKey = new byte[keyLength];
+            inData.readFully(serializedKey);
+            serializedClientsPublicKeys.add(new ClientSerializedPublicKey(username, keyLength, serializedKey));
+
+            // aggiunge l'username del client alla propria lista
             connectedClients.add(username);
             Map<String, Object> streams = new HashMap<>();
             streams.put("socket", s);
             streams.put("in", in);
             streams.put("out", out);
 
+            // salva gli stream di quel client
             clients.put(username, streams);
-
-
-// region THREADS & DAEMONS
-            // create and start a thread for each client
-            startListeningThread (username, in, out);
-            startPingRequestDaemon(5000, username, in, out);
-// endregion
-
-
 
             out.println(":giveAckIpPort:" + s.getLocalAddress() +"-"+s.getPort());
             out.println(":updatedClientsList:" + adaptClientListToPrint());
             sendBroadcastMessage (":updatedClientsList:" + adaptClientListToPrint());
-            out.println(":pingRequest:");
+
+
+// region THREADS & DAEMONS
+            startListeningThread (username, in, out);
+            // create and start a thread for each client
+            //startPingRequestDaemon(5000, username, in, out);
+// endregion
 
         } while (true);
     }
@@ -92,8 +98,8 @@ public class ServSocket {
             } catch (IOException e) {
                 if (e.getMessage().equals("Connection reset")) {
                     System.err.println("Il client ["+username+"] si è disconnesso");
-                    clients.remove(username);
-                    connectedClients.remove(username);
+                    // remove the client from any list
+                    removeClientFromAnyList(username);
 
                     sendBroadcastMessage(":updatedClientsList:" + adaptClientListToPrint());
                 }
@@ -133,5 +139,14 @@ public class ServSocket {
             PrintWriter out = (PrintWriter) clients.get(username).get("out");
             out.println(message);
         }
+    }
+
+    private void removeClientFromAnyList (String username) {
+        clients.remove(username);
+        connectedClients.remove(username);
+        serializedClientsPublicKeys.forEach(object -> {
+            if (object.username().equals("aDW"))
+                serializedClientsPublicKeys.remove(object);
+        });
     }
 }
