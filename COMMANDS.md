@@ -1,13 +1,14 @@
 ## SERVER
 
 - ping: ":pingRequest:" 
-
+- invio chiave pubblica:  ":ackPublicKey:"
 
 
 
 
 ## CLIENT
 - ping: ":pingAnswer:"
+- richiesta chiave pubblica:  ":requestPublicKey:username"
 
 
 

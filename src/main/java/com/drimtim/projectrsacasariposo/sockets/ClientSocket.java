@@ -7,11 +7,10 @@ import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
 import javafx.application.Platform;
 
 import java.io.*;
-import java.lang.management.PlatformManagedObject;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ClientSocket {
@@ -37,7 +36,7 @@ public class ClientSocket {
         private byte[] serializedPublicKey;
     private ClientKey privateKey;
 
-    private ClientKey receiverKey;
+    private ClientKey receiverPublicKey;
 
 
     public boolean configureServerSocket () throws IOException {
@@ -92,14 +91,23 @@ public class ClientSocket {
                         switch (command) {
 
                             case "pingRequest":
-                                out.println(":pingAnswer:"+username +" | "+ ip + ":"+ port);
+                                out.println(":pingAnswer:" + username + " | " + ip + ":" + port);
                                 break;
 
                             case "updatedClientsList":
                                 parseConnectedClients(CommandsBuilder.getCommandSuffix(line));
-                                if (ControllerChatSelection.instance!=null)
-                                    Platform.runLater(()->ControllerChatSelection.instance.updateVboxChats());
-
+                                if (ControllerChatSelection.instance != null)
+                                    Platform.runLater(() -> ControllerChatSelection.instance.updateVboxChats());
+                                break;
+                            case "publicKeyIncoming":
+                                DataInputStream inData = new DataInputStream(serverSocket.getInputStream());
+                                int keyLength = inData.readInt();
+                                byte[] serializedKey = new byte[keyLength];
+                                inData.readFully(serializedKey);
+                                System.out.println("CHIAVE SERIALIZZATA " +"DESTINATARIO"+ " : " + Arrays.toString(serializedKey));
+                                receiverPublicKey = ClientKey.deserializePublicKey(serializedKey);
+                                System.err.println(receiverPublicKey.n());
+                                break;
                         }
                     }
                 }
@@ -113,9 +121,14 @@ public class ClientSocket {
 
     }
 
-    public void sendMessage (String message) {
+    public void sendMessageToClient(String message) {
         out.println("MESSAGGIO: " + message);  // TODO  PASSARE USERNAME DESTINATARIO
     }
+
+    public void sendMessageToServer (String command) {
+        out.println(command);
+    }
+
 
     private void parseConnectedClients (String clientsListAsString) {
         connectedClients = new ArrayList<>(Arrays.asList(clientsListAsString.split(",")));
@@ -129,8 +142,7 @@ public class ClientSocket {
         publicKey = keys[0];
         privateKey = keys[1];
         // serializza la chiave pubblica e la salva nell'apposito attributo
-        try
-        {
+        try {
             serializedPublicKey = publicKey.serializeKey();
         } catch (Exception e) {e.printStackTrace();}
     }

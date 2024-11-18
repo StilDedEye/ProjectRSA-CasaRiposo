@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<HBox fx:id="hBoxClientItem" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="71.0" prefWidth="324.0" style="-fx-background-radius: 10px; -fx-background-color: gray;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_client.ControllerClientSelectionItem">
+   <children>
+      <Text fx:id="textClientUsername" strokeType="OUTSIDE" strokeWidth="0.0" text="Nome Client">
+         <HBox.margin>
+            <Insets left="10.0" />
+         </HBox.margin>
+         <font>
+            <Font name="Arial Bold" size="17.0" />
+         </font>
+      </Text>
+   </children>
+</HBox>
