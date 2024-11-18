@@ -49,6 +49,7 @@ public class ServSocket {
             int keyLength = inData.readInt();
             byte[] serializedKey = new byte[keyLength];
             inData.readFully(serializedKey);
+            System.out.println("CHIAVE SERIALIZZATA " +username+ " : " + Arrays.toString(serializedKey));
             serializedClientsPublicKeys.add(new ClientSerializedPublicKey(username, keyLength, serializedKey));
 
             // aggiunge l'username del client alla propria lista
@@ -92,6 +93,17 @@ public class ServSocket {
                             case "pingAnswer":
                                 System.err.println("Ping executed successfully with " + commandSuffix);
                                 break;
+                            case "requestPublicKey":  // suffix = username
+                                int index = getPublicKeyIndex(commandSuffix);
+                                if (index == -1) {
+                                    // TODO MESSAGGIO DI ERRORE
+                                } else {
+                                    ClientSerializedPublicKey pubk = serializedClientsPublicKeys.get(index);
+                                    DataOutputStream dataOut = new DataOutputStream(((Socket) clients.get(username).get("socket")).getOutputStream());
+                                    out.println(":publicKeyIncoming:");
+                                    dataOut.writeInt(pubk.keyLength());
+                                    dataOut.write(pubk.serializedKey());
+                                }
                         }
                     }
                 }
@@ -148,5 +160,14 @@ public class ServSocket {
             if (object.username().equals("aDW"))
                 serializedClientsPublicKeys.remove(object);
         });
+    }
+
+    private int getPublicKeyIndex (String username) {
+        for (ClientSerializedPublicKey serializedClientsPublicKey : serializedClientsPublicKeys) {
+            if (serializedClientsPublicKey.username().equals(username)) {
+                return serializedClientsPublicKeys.indexOf(serializedClientsPublicKey);
+            }
+        }
+        return -1;
     }
 }

@@ -1,6 +1,5 @@
 package com.drimtim.projectrsacasariposo.MAIN_client;
 
-import com.almasb.fxgl.net.Client;
 import com.drimtim.projectrsacasariposo.sockets.ClientSocket;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,7 +25,7 @@ public class ControllerChatClient {
     protected void onSendClicked () {
         String message = txtInputMessage.getText();
         txtInputMessage.setText("");
-        ClientSocket.instance.sendMessage(message);
+        ClientSocket.instance.sendMessageToClient(message);
     }
 
 }
