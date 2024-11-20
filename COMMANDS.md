@@ -1,7 +1,7 @@
 ## SERVER
 
 - ping: ":pingRequest:" 
-- invio chiave pubblica:  ":ackPublicKey:"
+- invio chiave pubblica:  ":publicKeyIncoming:"
 
 
 
