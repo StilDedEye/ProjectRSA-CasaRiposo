@@ -6,6 +6,7 @@ import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ServSocket {
@@ -27,10 +28,10 @@ public class ServSocket {
             System.out.println("New client detected {" + s.getRemoteSocketAddress() + "}");
 
             // Crea gli stream
-            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
             DataInputStream inData = new DataInputStream(s.getInputStream());
 
-            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+            PrintWriter out = new PrintWriter(s.getOutputStream(), true, StandardCharsets.UTF_8);
 
             // the first print from the client is the username
             String username = in.readLine();

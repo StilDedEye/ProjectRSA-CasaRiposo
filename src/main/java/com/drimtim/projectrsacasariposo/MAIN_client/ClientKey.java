@@ -54,7 +54,7 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
     }
 
     public String encryptMessage(String message, BigInteger e, BigInteger n) {
-        BigInteger plainText = new BigInteger(message.getBytes());
+        BigInteger plainText = new BigInteger(1,message.getBytes(StandardCharsets.UTF_8));
 
         BigInteger cypherText = plainText.modPow(e, n);
         byte[] cypherBytes = cypherText.toByteArray();
@@ -69,7 +69,7 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
         byte[] cypherBytes = Base64.getDecoder().decode(message);
 
         // Converte i byte in un BigInteger
-        BigInteger cypherText = new BigInteger(cypherBytes);
+        BigInteger cypherText = new BigInteger(1, cypherBytes);
 
         // Decifra il messaggio con modPow
         BigInteger decrypted = cypherText.modPow(d, n);
@@ -77,6 +77,24 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
         // Ritorna il messaggio in chiaro come stringa
         return new String(decrypted.toByteArray(), StandardCharsets.UTF_8);
     }
+
+    /*
+     * Utilizziamo il costruttore BigInteger(int signum, byte[] magnitude)
+     * per garantire che i byte vengano trattati come un numero positivo,
+     * indipendentemente dai valori di byte che potrebbero rappresentare
+     * caratteri accentati in UTF-8 (che possono avere byte negativi).
+     *
+     * Il costruttore standard BigInteger(byte[] val) interpreta i byte come
+     * un valore con segno, cioè usa il complemento a due per determinare
+     * se il numero è positivo o negativo. Ad esempio, un array di byte
+     * che rappresenta il carattere 'à' (in UTF-8) potrebbe contenere valori
+     * come -61 e -95, che potrebbero essere interpretati come un numero negativo.
+     *
+     * Passando 1 come parametro "signum", forziamo BigInteger a trattare
+     * il valore come positivo, evitando problemi di interpretazione errata
+     * e garantendo una corretta gestione dei dati durante la crittografia e
+     * la decodifica.
+     */
 }
 
 

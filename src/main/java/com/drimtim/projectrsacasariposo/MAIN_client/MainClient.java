@@ -11,11 +11,12 @@ import java.io.IOException;
 public class MainClient extends Application {
 
     public static Stage primaryStage;
-
+    public static Scene currentScene;
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainClient.class.getResource("/com/drimtim/projectrsacasariposo/client/clientSplash.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
+        currentScene = scene;
         stage.setTitle("Client");
         stage.setScene(scene);
         stage.show();
