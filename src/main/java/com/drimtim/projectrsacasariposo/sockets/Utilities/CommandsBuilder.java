@@ -11,11 +11,15 @@ public class CommandsBuilder {
     }
 
     public static String getMessageReceiver (String message) {
-        System.out.println("USERNAME DESTINAZIONE: " + message.substring(message.indexOf('!')+1, message.indexOf('!', message.indexOf('!')+1)));
         return message.substring(message.indexOf('!')+1, message.indexOf('!', message.indexOf('!')+1));
     }
     public static String getRestOfMessage (String message) {
         return message.substring(message.indexOf("?"));
+    }
+
+    // !receiverUsername!?username?finalMessage
+    public static String getMessageSenderUsername (String message) {
+        return message.substring(message.indexOf("?")+1, message.indexOf("?", message.indexOf("?")+1));
     }
 
     /* For example  with ":pingRequest:" as input it returns "pingRequest"   */

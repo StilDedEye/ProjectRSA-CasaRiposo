@@ -73,6 +73,7 @@ public class ControllerClientSplash {
 
                 MainClient.primaryStage.setTitle(":client-" + username);
                 MainClient.primaryStage.setScene(scene);
+                MainClient.currentScene=scene;
                 MainClient.primaryStage.setResizable(true);
             } else {
                 System.err.println("ERROR -> CONNECTIONREFUSED| username already taken");
