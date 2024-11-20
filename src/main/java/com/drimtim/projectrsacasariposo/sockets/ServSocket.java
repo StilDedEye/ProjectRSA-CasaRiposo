@@ -47,6 +47,7 @@ public class ServSocket {
             /* visto che la connessione è stata stabilita, ora riceverà la chiave pubblica dal client
             * e se la salverà, associandola all'username*/
             int keyLength = inData.readInt();
+            System.out.println("LUNGHEZZA CHIAVE APPENA RICEVUTA: " + keyLength);
             byte[] serializedKey = new byte[keyLength];
             inData.readFully(serializedKey);
             System.out.println("CHIAVE SERIALIZZATA " +username+ " : " + Arrays.toString(serializedKey));
@@ -96,15 +97,30 @@ public class ServSocket {
                             case "requestPublicKey":  // suffix = username
                                 int index = getPublicKeyIndex(commandSuffix);
                                 if (index == -1) {
-                                    // TODO MESSAGGIO DI ERRORE
+                                    System.out.println("ERRORE INDICE = -1 " + index);
                                 } else {
                                     ClientSerializedPublicKey pubk = serializedClientsPublicKeys.get(index);
-                                    DataOutputStream dataOut = new DataOutputStream(((Socket) clients.get(username).get("socket")).getOutputStream());
+                                    //DataOutputStream dataOut = new DataOutputStream(((Socket) clients.get(username).get("socket")).getOutputStream());
                                     out.println(":publicKeyIncoming:");
-                                    dataOut.writeInt(pubk.keyLength());
-                                    dataOut.write(pubk.serializedKey());
+                                    out.flush();
+                                    System.out.println("LUNGHEZZA CHIAVE CHE IO INVIO: " + pubk.keyLength());
+                                    out.println(pubk.keyLength());
+                                    out.flush();
+                                    // Poi invia la chiave serializzata (come stringa codificata in Base64)
+                                    String serializedKeyBase64 = Base64.getEncoder().encodeToString(pubk.serializedKey());
+                                    out.println(serializedKeyBase64); // invia la chiave serializzata come stringa
+                                    out.flush();
                                 }
+                                break;
                         }
+                    } else if (CommandsBuilder.isAMessage(line)) {
+                        String destinationUsername = CommandsBuilder.getMessageReceiver(line);
+                        // trova il client destinatario e gira il messaggio
+                        Socket socket = (Socket) clients.get(destinationUsername).get("socket");
+                        PrintWriter out2 = new PrintWriter(socket.getOutputStream(), true);  // true per auto-flush
+                        out2.println(line);
+                        out2.flush();
+
                     }
                 }
             } catch (IOException e) {

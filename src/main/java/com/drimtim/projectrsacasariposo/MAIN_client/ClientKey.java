@@ -2,7 +2,8 @@ package com.drimtim.projectrsacasariposo.MAIN_client;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public record ClientKey(BigInteger coprime, BigInteger n) {
 
@@ -50,6 +51,31 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
 
         // restituisce l'oggetto ClientKey
         return new ClientKey(coprime, n);
+    }
+
+    public String encryptMessage(String message, BigInteger e, BigInteger n) {
+        BigInteger plainText = new BigInteger(message.getBytes());
+
+        BigInteger cypherText = plainText.modPow(e, n);
+        byte[] cypherBytes = cypherText.toByteArray();
+
+        // Usa Base64 per codificare l'array di byte in una stringa sicura per la trasmissione
+        return Base64.getEncoder().encodeToString(cypherBytes);
+    }
+
+    // CHIAVE PUBBLICA N ed E
+    public String decryptMessage(String message, BigInteger d, BigInteger n) {
+        // Decodifica il messaggio da Base64
+        byte[] cypherBytes = Base64.getDecoder().decode(message);
+
+        // Converte i byte in un BigInteger
+        BigInteger cypherText = new BigInteger(cypherBytes);
+
+        // Decifra il messaggio con modPow
+        BigInteger decrypted = cypherText.modPow(d, n);
+
+        // Ritorna il messaggio in chiaro come stringa
+        return new String(decrypted.toByteArray(), StandardCharsets.UTF_8);
     }
 }
 

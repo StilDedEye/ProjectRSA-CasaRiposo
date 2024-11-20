@@ -24,13 +24,13 @@ public class ControllerClientSelectionItem {
             String destinationUsername = textClientUsername.getText();
             String command = ":requestPublicKey:" + destinationUsername;
 
+            System.out.println("DESTINAZIONE MARE USERNAME: " + destinationUsername);
             ClientSocket.instance.sendMessageToServer(command);
-
+            ClientSocket.instance.receiverUsername = destinationUsername;
 
             FXMLLoader fxmlLoader = new FXMLLoader(ControllerClientSplash.class.getResource("/com/drimtim/projectrsacasariposo/client/clientChat.fxml"));
             try {
                 GridPane gridPane = fxmlLoader.load();
-                fxmlLoader.getController();
                 Scene scene = new Scene(gridPane);
 
                 MainClient.primaryStage.setScene(scene);

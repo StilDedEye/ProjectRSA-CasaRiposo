@@ -6,6 +6,17 @@ public class CommandsBuilder {
     public static boolean isACommand (String message) {
         return message.startsWith(":");
     }
+    public static boolean isAMessage (String message) {
+        return message.startsWith("!");
+    }
+
+    public static String getMessageReceiver (String message) {
+        System.out.println("USERNAME DESTINAZIONE: " + message.substring(message.indexOf('!')+1, message.indexOf('!', message.indexOf('!')+1)));
+        return message.substring(message.indexOf('!')+1, message.indexOf('!', message.indexOf('!')+1));
+    }
+    public static String getRestOfMessage (String message) {
+        return message.substring(message.indexOf("?"));
+    }
 
     /* For example  with ":pingRequest:" as input it returns "pingRequest"   */
     public static String getCommandPrefix (String command) {

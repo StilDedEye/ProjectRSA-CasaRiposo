@@ -1,6 +1,7 @@
 package com.drimtim.projectrsacasariposo.sockets;
 
 import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
+import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatClient;
 import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection;
 import com.drimtim.projectrsacasariposo.PRIMENUMBERS.PrimeFetcher;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
@@ -11,6 +12,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 public class ClientSocket {
@@ -19,8 +21,6 @@ public class ClientSocket {
     private String username;
     private String ip;
     private int port;
-
-    private String destinationUsername;
 
     public List<String> connectedClients = new ArrayList<String>(); // it saves only usernames
 
@@ -37,6 +37,7 @@ public class ClientSocket {
     private ClientKey privateKey;
 
     private ClientKey receiverPublicKey;
+    public String receiverUsername;
 
 
     public boolean configureServerSocket () throws IOException {
@@ -100,20 +101,30 @@ public class ClientSocket {
                                     Platform.runLater(() -> ControllerChatSelection.instance.updateVboxChats());
                                 break;
                             case "publicKeyIncoming":
-                                DataInputStream inData = new DataInputStream(serverSocket.getInputStream());
-                                int keyLength = inData.readInt();
-                                byte[] serializedKey = new byte[keyLength];
-                                inData.readFully(serializedKey);
-                                System.out.println("CHIAVE SERIALIZZATA " +"DESTINATARIO"+ " : " + Arrays.toString(serializedKey));
+                                //DataInputStream inData = new DataInputStream(serverSocket.getInputStream());
+                                System.out.println("1");
+                                int keyLength = Integer.parseInt(in.readLine());
+                                System.out.println("1");
+                                String serializedKeyBase64 = in.readLine();
+                                byte[] serializedKey = Base64.getDecoder().decode(serializedKeyBase64); // decodifica Base64
+                                System.out.println("Chiave serializzata: " + Arrays.toString(serializedKey));
+
+                                // Deserializza la chiave
                                 receiverPublicKey = ClientKey.deserializePublicKey(serializedKey);
-                                System.err.println(receiverPublicKey.n());
+                                System.err.println("Chiave ricevuta: " + receiverPublicKey.n());
                                 break;
                         }
+                    } else {
+                        String restOfMessage  =  CommandsBuilder.getRestOfMessage(line);
+                        String cypherText = restOfMessage.substring(restOfMessage.indexOf(":")+1);
+                        String plainText = privateKey.decryptMessage(cypherText, privateKey.coprime(), privateKey.n());
+                        Platform.runLater(()->{
+                            ControllerChatClient.instance.addMessage(plainText, false);
+                        });
                     }
                 }
             } catch (IOException e) {
-                if (e.getMessage().equals("Connection reset"))
-                    System.err.println("Sei stato disconnesso dal server.");
+                e.printStackTrace();
             }
         });
         threadListeningByClient.setName("threadListeningByClient");
@@ -122,7 +133,10 @@ public class ClientSocket {
     }
 
     public void sendMessageToClient(String message) {
-        out.println("MESSAGGIO: " + message);  // TODO  PASSARE USERNAME DESTINATARIO
+        String finalMessage = receiverPublicKey.encryptMessage(message, receiverPublicKey.coprime(), receiverPublicKey.n());
+        System.out.println("MESSAGGIO DA INVIARE: " + finalMessage);
+        out.println("!"+receiverUsername +"!?"+username+"?:" + finalMessage);  // TODO  PASSARE USERNAME DESTINATARIO
+        out.flush();
     }
 
     public void sendMessageToServer (String command) {
