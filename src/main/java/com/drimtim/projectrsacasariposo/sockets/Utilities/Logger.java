@@ -11,9 +11,9 @@ public class Logger {
 
     private static boolean printOnConsole = true;
     public static void log (String text, String level) {
-        ControllerServerConsole.instance.log(level +"> " + text);
+        ControllerServerConsole.instance.log(level +"> " + text + "\n");
         if (printOnConsole && level.equals(EXCEPTION))
-            System.err.println("> " + level +": " + text);
+            System.err.println("> " + level +": " + text + "\n");
         else if (printOnConsole) System.out.println("> " + level +": " + text);
     }
 }
