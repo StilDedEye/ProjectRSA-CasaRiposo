@@ -38,9 +38,6 @@ public class ControllerChatClient {
 
     @FXML
     public void initialize () {
-        scrollPaneVbox.setOnScroll(scrollEvent -> {
-            System.out.println(scrollPaneVbox.getVvalue());
-        });
     }
 
     @FXML
