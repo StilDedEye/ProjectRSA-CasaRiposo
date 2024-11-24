@@ -2,6 +2,7 @@ package com.drimtim.projectrsacasariposo.sockets;
 
 import com.drimtim.projectrsacasariposo.MAIN_server.ClientSerializedPublicKey;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
+import com.drimtim.projectrsacasariposo.sockets.Utilities.Logger;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -11,7 +12,6 @@ import java.util.*;
 
 public class ServSocket {
     private static int port = 1201;
-    private static String ip = "localhost";
 
     public static ServerSocket serverSocket;
 
@@ -23,9 +23,9 @@ public class ServSocket {
     public void initializeListening () throws IOException {
         serverSocket = new ServerSocket(port);
         do {
-            System.out.println("Listening for new clients...");
+            Logger.log("listening for new clients...", Logger.SERVER);
             Socket s = serverSocket.accept();
-            System.out.println("New client detected {" + s.getRemoteSocketAddress() + "}");
+            Logger.log("new client detected {" + s.getRemoteSocketAddress().toString().substring(1) + "}", Logger.SERVER);
 
             // Crea gli stream
             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
@@ -38,7 +38,7 @@ public class ServSocket {
 
             /*If the client gives an already taken username, the connection is refused*/
             if (clients.containsKey(username)) {
-                System.out.println("Username already used, client disconnected.");
+                Logger.log("username{"+username+"} already used, client disconnected", Logger.SERVER);
                 out.println(":CONNECTIONREFUSED:usernameAlreadyTaken");
                 s.close();
                 continue;
@@ -48,10 +48,10 @@ public class ServSocket {
             /* visto che la connessione è stata stabilita, ora riceverà la chiave pubblica dal client
             * e se la salverà, associandola all'username*/
             int keyLength = inData.readInt();
-            System.out.println("LUNGHEZZA CHIAVE APPENA RICEVUTA: " + keyLength);
+            Logger.log("client{"+username+"} key length -> " + keyLength, Logger.CLIENT);
             byte[] serializedKey = new byte[keyLength];
             inData.readFully(serializedKey);
-            System.out.println("CHIAVE SERIALIZZATA " +username+ " : " + Arrays.toString(serializedKey));
+            Logger.log("serialized public key client{" +username+ "} -> " + Arrays.toString(serializedKey), Logger.CLIENT);
             serializedClientsPublicKeys.add(new ClientSerializedPublicKey(username, keyLength, serializedKey));
 
             // aggiunge l'username del client alla propria lista
@@ -84,27 +84,27 @@ public class ServSocket {
             try {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    System.out.println("/t/tRicevuto dal client: | " + line);
+                    Logger.log("message by client -> " + line, Logger.CLIENT);
 
                     if (CommandsBuilder.isACommand(line)) { // se è un comando lo gestisce come tale
                         String commandPrefix = CommandsBuilder.getCommandPrefix(line);
                         String commandSuffix = CommandsBuilder.getCommandSuffix(line);
-                        System.out.println("command: " + commandPrefix);
+                        Logger.log("extracting command... ", Logger.SERVER);
+                        Logger.log("extracted command : " + commandPrefix, Logger.SERVER);
 
                         switch (commandPrefix) {
                             case "pingAnswer":
-                                System.err.println("Ping executed successfully with " + commandSuffix);
+                                Logger.log("ping answer by -> " + commandSuffix, Logger.SERVER);
                                 break;
                             case "requestPublicKey":  // suffix = username
                                 int index = getPublicKeyIndex(commandSuffix);
                                 if (index == -1) {
-                                    System.out.println("ERRORE INDICE = -1 " + index);
+                                    Logger.log("ERROR -> couldn't send public key because username{" + commandSuffix +"} doesn't exist", Logger.SERVER);
                                 } else {
                                     ClientSerializedPublicKey pubk = serializedClientsPublicKeys.get(index);
                                     //DataOutputStream dataOut = new DataOutputStream(((Socket) clients.get(username).get("socket")).getOutputStream());
                                     out.println(":publicKeyIncoming:");
                                     out.flush();
-                                    System.out.println("LUNGHEZZA CHIAVE CHE IO INVIO: " + pubk.keyLength());
                                     out.println(pubk.keyLength());
                                     out.flush();
                                     // Poi invia la chiave serializzata (come stringa codificata in Base64)
@@ -126,11 +126,17 @@ public class ServSocket {
                 }
             } catch (IOException e) {
                 if (e.getMessage().equals("Connection reset")) {
-                    System.err.println("Il client ["+username+"] si è disconnesso");
+                    Logger.log("client{"+username+"} has disconnected from the server", Logger.SERVER);
+                    Logger.log("removing client{"+username+"} from lists...", Logger.SERVER);
+
                     // remove the client from any list
                     removeClientFromAnyList(username);
 
                     sendBroadcastMessage(":updatedClientsList:" + adaptClientListToPrint());
+
+                    Logger.log("client{"+username+"} successfully deleted", Logger.SERVER);
+                } else {
+                    Logger.log(getStackTraceAsString(e), Logger.EXCEPTION);
                 }
 
 
@@ -146,7 +152,9 @@ public class ServSocket {
                 try {
                     Thread.sleep(millis);
                     out.println(":pingRequest:");
-                } catch (InterruptedException e) {throw new RuntimeException(e);}
+                } catch (InterruptedException e) {
+                    Logger.log(getStackTraceAsString(e), Logger.EXCEPTION);
+                }
             }
         });
         threadPingRequestDaemon.setName("threadPingRequestDaemon");
@@ -173,12 +181,11 @@ public class ServSocket {
     private void removeClientFromAnyList (String username) {
         clients.remove(username);
         connectedClients.remove(username);
-        serializedClientsPublicKeys.forEach(object -> {
-            if (object.username().equals("aDW"))
-                serializedClientsPublicKeys.remove(object);
-        });
+        serializedClientsPublicKeys.removeIf(object -> object.username().equals(username));
     }
 
+    /* se ritorna -1, vuol dire che l'username del client del quale si vuole sapere la chiave
+    non è registrato nel server*/
     private int getPublicKeyIndex (String username) {
         for (ClientSerializedPublicKey serializedClientsPublicKey : serializedClientsPublicKeys) {
             if (serializedClientsPublicKey.username().equals(username)) {
@@ -186,5 +193,16 @@ public class ServSocket {
             }
         }
         return -1;
+    }
+
+
+    private static String getStackTraceAsString(Exception e) {
+        // Usa StringWriter e PrintWriter per catturare lo stack trace
+        /* lo stringwriter si basa su un buffer, nel quale viene inserito lo stacktrace
+        * e dal contenuto del buffer si può passare poi ad una stringa effettiva*/
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw); // Scrive lo stack trace nel PrintWriter
+        return sw.toString();  // Converte il contenuto dello StringWriter in una stringa
     }
 }
