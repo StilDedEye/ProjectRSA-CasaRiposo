@@ -81,9 +81,9 @@ public class PrimeFetcher {
 
     // Metodo per trovare un e coprimo con m
     /**
-    *
-    *
-    *
+    * Calcola il coprimo e. In genere controlla se 65537 è coprimo di m, in caso contrario aggiunge 2 a 65537 finchè non diventa coprimo.
+    * @param m Il numero su cui va calcolato il coprimo
+    * @return il coprimo, di tipo BigInteger
     * */
     public static BigInteger findCoprime(BigInteger m) {
         BigInteger e = BigInteger.valueOf(65537); // Valore standard usato nella maggior parte dei casi
