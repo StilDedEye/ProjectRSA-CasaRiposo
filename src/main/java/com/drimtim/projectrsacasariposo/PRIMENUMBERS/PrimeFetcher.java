@@ -10,13 +10,14 @@ import java.security.SecureRandom;
 *@author Drim Studios
 * */
 public class PrimeFetcher {
-
     /**
     * Genera la chiave pubblica (e,n) e la chiave privata (d,n)
     * @return il vettore di record di tipo ClientKey contenente le due chiavi
     * */
+
     public ClientKey[] generateKeys () {
         SecureRandom random = new SecureRandom();
+
 
         // Generazione numeri primi p e q
         BigInteger p = BigInteger.probablePrime(2048, random);
@@ -77,7 +78,7 @@ public class PrimeFetcher {
         BigInteger decifrato = cifrato.modPow(d,n);
         String decMessage = new String(decifrato.toByteArray());
         System.err.println("Messaggio decifrato: " + decMessage);
-    }
+
 
     // Metodo per trovare un e coprimo con m
     /**

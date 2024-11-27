@@ -6,14 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public record ClientKey(BigInteger coprime, BigInteger n) {
-
     /* Serializza la chiave. Questo la rende adatta ad essere trasmessa lungo lo stream di output e
      * facilita i vari processi di lettura. Basta un solo invio per inviare sia il coprimo sia n ed
      * il formato di invio è universale (array di byte) */
     // Serializzazione semplificata con DataOutputStream
     public byte[] serializeKey() throws IOException {
         /* conterrà l'array finale di byte  (esempio = [10,50,200,240]. Ogni numero è rappresentato da
-        1 byte, 8 bit, 2^8=256 (da 0 a 255)*/
+        1 byte, 8 bit, 2^8=256 (da -127 a 128)*/
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         // usata per costruire l'array di byte in modo semplice
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
@@ -54,7 +53,7 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
     }
 
     public String encryptMessage(String message, BigInteger e, BigInteger n) {
-        BigInteger plainText = new BigInteger(1,message.getBytes(StandardCharsets.UTF_8));
+        BigInteger plainText = new BigInteger(1, message.getBytes(StandardCharsets.UTF_8));
 
         BigInteger cypherText = plainText.modPow(e, n);
         byte[] cypherBytes = cypherText.toByteArray();
@@ -64,9 +63,9 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
     }
 
     // CHIAVE PUBBLICA N ed E
-    public String decryptMessage(String message, BigInteger d, BigInteger n) {
+    public String decryptMessage(String cypherMessage, BigInteger d, BigInteger n) {
         // Decodifica il messaggio da Base64
-        byte[] cypherBytes = Base64.getDecoder().decode(message);
+        byte[] cypherBytes = Base64.getDecoder().decode(cypherMessage);
 
         // Converte i byte in un BigInteger
         BigInteger cypherText = new BigInteger(1, cypherBytes);
