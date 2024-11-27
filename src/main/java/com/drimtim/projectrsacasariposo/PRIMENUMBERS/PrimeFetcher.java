@@ -5,9 +5,16 @@ import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+/**
+* Genera i numeri primi p e q e da essi ricava le chiavi pubblica e privata
+*@author Drim Studios
+* */
 public class PrimeFetcher {
 
-
+    /**
+    * Genera la chiave pubblica (e,n) e la chiave privata (d,n)
+    * @return il vettore di record di tipo ClientKey contenente le due chiavi
+    * */
     public ClientKey[] generateKeys () {
         SecureRandom random = new SecureRandom();
 
