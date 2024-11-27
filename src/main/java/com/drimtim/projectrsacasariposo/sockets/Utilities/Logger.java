@@ -2,8 +2,6 @@ package com.drimtim.projectrsacasariposo.sockets.Utilities;
 
 import com.drimtim.projectrsacasariposo.MAIN_server.ControllerServerConsole;
 
-import java.security.spec.ECField;
-
 public class Logger {
     public static final String CLIENT = "?CLIENT";
     public static final String SERVER = "?SERVER";

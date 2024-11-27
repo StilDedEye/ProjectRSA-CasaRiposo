@@ -10,13 +10,15 @@ import java.security.SecureRandom;
 *@author Drim Studios
 * */
 public class PrimeFetcher {
-
     /**
-    * Genera la chiave pubblica (e,n) e la chiave privata (d,n)
-    * @return il vettore di record di tipo ClientKey contenente le due chiavi
-    * */
-    public ClientKey[] generateKeys () {
+     * Genera la chiave pubblica (e,n) e la chiave privata (d,n)
+     *
+     * @return il vettore di record di tipo ClientKey contenente le due chiavi
+     */
+
+    public ClientKey[] generateKeys() {
         SecureRandom random = new SecureRandom();
+
 
         // Generazione numeri primi p e q
         BigInteger p = BigInteger.probablePrime(2048, random);
@@ -37,7 +39,7 @@ public class PrimeFetcher {
         System.out.println("E: " + e);
         System.out.println("D: " + d);
 
-        return new ClientKey[]{new ClientKey (e,n), new ClientKey (d,n)};
+        return new ClientKey[]{new ClientKey(e, n), new ClientKey(d, n)};
     }
 
     public static void main(String[] args) {
@@ -69,15 +71,15 @@ public class PrimeFetcher {
         System.out.println("Messaggio in bytes: " + mBytes);
 
         // Cifrato = Messaggio^e mod n
-        BigInteger cifrato = mBytes.modPow(e,n);
+        BigInteger cifrato = mBytes.modPow(e, n);
         System.out.println("Messaggio cifrato: " + cifrato);
 
         // Decifrato = Messaggio^d mod n
 
-        BigInteger decifrato = cifrato.modPow(d,n);
+        BigInteger decifrato = cifrato.modPow(d, n);
         String decMessage = new String(decifrato.toByteArray());
         System.err.println("Messaggio decifrato: " + decMessage);
-    }
+
 
     // Metodo per trovare un e coprimo con m
     /**
@@ -85,7 +87,8 @@ public class PrimeFetcher {
     * @param m Il numero su cui va calcolato il coprimo
     * @return il coprimo, di tipo BigInteger
     * */
-    public static BigInteger findCoprime(BigInteger m) {
+    
+    public static BigInteger findCoprime (BigInteger m){
         BigInteger e = BigInteger.valueOf(65537); // Valore standard usato nella maggior parte dei casi
         if (!m.gcd(e).equals(BigInteger.ONE)) { // calcolo MCD tra e ed m, se esce 1 va bene come coprimo
             while (!m.gcd(e).equals(BigInteger.ONE)) {
@@ -95,5 +98,4 @@ public class PrimeFetcher {
         }
         return e; // e che viene ritornato sarà sicuramente coprimo con m
     }
-
 }

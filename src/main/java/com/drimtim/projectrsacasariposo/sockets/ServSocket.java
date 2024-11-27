@@ -138,8 +138,6 @@ public class ServSocket {
                 } else {
                     Logger.log(getStackTraceAsString(e), Logger.EXCEPTION);
                 }
-
-
             }
         });
         threadListeningByServer.setName("threadListeningByServer");

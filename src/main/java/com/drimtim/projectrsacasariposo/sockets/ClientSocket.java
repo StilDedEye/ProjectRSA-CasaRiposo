@@ -87,7 +87,6 @@ public class ClientSocket {
                         System.out.println("command: " + command);
 
                         switch (command) {
-
                             case "pingRequest":
                                 out.println(":pingAnswer:" + username + " | " + ip + ":" + port);
                                 break;
