@@ -73,6 +73,7 @@ public class PrimeFetcher {
         System.out.println("Messaggio cifrato: " + cifrato);
 
         // Decifrato = Messaggio^d mod n
+
         BigInteger decifrato = cifrato.modPow(d,n);
         String decMessage = new String(decifrato.toByteArray());
         System.err.println("Messaggio decifrato: " + decMessage);
