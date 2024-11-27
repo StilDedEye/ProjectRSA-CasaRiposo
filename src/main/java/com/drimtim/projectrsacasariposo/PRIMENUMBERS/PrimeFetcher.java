@@ -73,12 +73,18 @@ public class PrimeFetcher {
         System.out.println("Messaggio cifrato: " + cifrato);
 
         // Decifrato = Messaggio^d mod n
+
         BigInteger decifrato = cifrato.modPow(d,n);
         String decMessage = new String(decifrato.toByteArray());
         System.err.println("Messaggio decifrato: " + decMessage);
     }
 
     // Metodo per trovare un e coprimo con m
+    /**
+    *
+    *
+    *
+    * */
     public static BigInteger findCoprime(BigInteger m) {
         BigInteger e = BigInteger.valueOf(65537); // Valore standard usato nella maggior parte dei casi
         if (!m.gcd(e).equals(BigInteger.ONE)) { // calcolo MCD tra e ed m, se esce 1 va bene come coprimo
