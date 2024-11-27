@@ -79,6 +79,11 @@ public class PrimeFetcher {
     }
 
     // Metodo per trovare un e coprimo con m
+    /**
+    *
+    *
+    *
+    * */
     public static BigInteger findCoprime(BigInteger m) {
         BigInteger e = BigInteger.valueOf(65537); // Valore standard usato nella maggior parte dei casi
         if (!m.gcd(e).equals(BigInteger.ONE)) { // calcolo MCD tra e ed m, se esce 1 va bene come coprimo
