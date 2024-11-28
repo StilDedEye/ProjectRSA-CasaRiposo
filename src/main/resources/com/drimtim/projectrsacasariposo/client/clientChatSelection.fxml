@@ -3,13 +3,25 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #001219;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="389.0" style="-fx-background-color: #001219;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection">
    <center>
-      <VBox fx:id="vBoxChats" maxHeight="500.0" maxWidth="380.0" prefHeight="370.0" prefWidth="280.0" style="-fx-background-color: #0a9396; -fx-background-radius: 10px;" BorderPane.alignment="CENTER">
+      <VBox fx:id="vBoxChats" maxHeight="500.0" maxWidth="380.0" prefHeight="354.0" prefWidth="369.0" style="-fx-background-color: #0a9396; -fx-background-radius: 10px;" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </BorderPane.margin>
       </VBox>
    </center>
+   <top>
+      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="RSA Chat" wrappingWidth="378.1185302734375" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Arial Bold" size="34.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets left="5.0" top="5.0" />
+         </BorderPane.margin>
+      </Text>
+   </top>
 </BorderPane>
