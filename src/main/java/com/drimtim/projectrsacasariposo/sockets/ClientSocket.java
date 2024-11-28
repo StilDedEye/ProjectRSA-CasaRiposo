@@ -5,12 +5,19 @@ import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatClient;
 import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection;
 import com.drimtim.projectrsacasariposo.PRIMENUMBERS.PrimeFetcher;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
+import com.drimtim.projectrsacasariposo.sockets.Utilities.Utilities;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.controlsfx.control.Notifications;
 
+import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 
 public class ClientSocket {
     public static ClientSocket instance = new ClientSocket();
@@ -124,6 +131,7 @@ public class ClientSocket {
                             l.add("sentByOther:"+plainText);
                             allReceivedMessages.put(senderUsername, l);
 
+
                             // se si trova già nella chat, printa il messaggio
                             if (receiverUsername!=null && receiverUsername.equals(senderUsername)) {
                                 // se è il client con il quale sta chattando, lo printa a schermo
@@ -131,6 +139,8 @@ public class ClientSocket {
                                     System.out.println("STO PRINTANDO");
                                     ControllerChatClient.instance.addMessage(plainText, false);
                                 });
+                            } else {
+                                sendNotification(senderUsername, plainText);
                             }
                         // se non esiste nella mappa il client, allora lo crea e aggiunge il messaggio
                         } else {
@@ -199,6 +209,26 @@ public class ClientSocket {
 
     public boolean checkIfUsernameExistsInsideMessages (String username) {
         return allReceivedMessages.get(username) != null;
+    }
+
+    private void sendNotification (String senderUsername, String plainText) {
+        Platform.runLater(()->{
+            Notifications newMessageNotification = Notifications.create();
+            newMessageNotification.position(Pos.BASELINE_RIGHT);
+            newMessageNotification.title("Messaggio da " + senderUsername);
+            String message = plainText;
+            // inserisce testo nella notifica ed eventualmente lo taglia se troppo lungo
+            if (plainText.length()>25)
+                message = plainText.substring(25) + "...";
+
+            newMessageNotification.text(message);
+            Image profilePic = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/drimtim/projectrsacasariposo/other/interface/defaultProfilePic/pic" + Utilities.getNumberFromUsername(senderUsername) + ".png")));
+            ImageView imgViewProfilePic = new ImageView(profilePic);
+            imgViewProfilePic.setFitWidth(50);
+            imgViewProfilePic.setFitHeight(50);
+            newMessageNotification.graphic(imgViewProfilePic);
+            newMessageNotification.show();
+        });
     }
 
 

@@ -1,17 +1,21 @@
 package com.drimtim.projectrsacasariposo.MAIN_client;
 
-import com.almasb.fxgl.net.Client;
 import com.drimtim.projectrsacasariposo.sockets.ClientSocket;
+import com.drimtim.projectrsacasariposo.sockets.Utilities.Utilities;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 public class ControllerClientSelectionItem {
 
@@ -19,6 +23,9 @@ public class ControllerClientSelectionItem {
     public Text textClientUsername;
     @FXML
     public HBox hBoxClientItem;
+
+    @FXML
+    public ImageView imgViewProfilePic;
 
     @FXML
     public void initialize () {
@@ -42,7 +49,24 @@ public class ControllerClientSelectionItem {
                 ((ControllerChatClient)fxmlLoader.getController()).loadPreviousMessages();
             } catch (IOException e) {throw new RuntimeException(e);}
         });
+
+        // configurazione generale barra
+        Platform.runLater(()->{
+            // selezione immagine casuale da quelle di default
+            int picNumber = Utilities.getNumberFromUsername(textClientUsername.getText());
+            Image profilePic = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/drimtim/projectrsacasariposo/other/interface/defaultProfilePic/pic" + picNumber + ".png")));
+            List<Color> colorList = Utilities.getDominantColors(profilePic, 2);
+
+            if (picNumber==2) {
+                hBoxClientItem.setStyle(hBoxClientItem.getStyle()+"-fx-background-color: linear-gradient(from 50% 50% to 100% 100%, "+Utilities.colorToHex(colorList.getFirst())+", "+Utilities.colorToHex(colorList.getLast())+");");
+            } else
+                hBoxClientItem.setStyle(hBoxClientItem.getStyle()+"-fx-background-color: linear-gradient(from 50% 50% to 100% 100%, "+Utilities.colorToHex(colorList.getFirst())+", "+Utilities.colorToHex(colorList.getLast())+");");
+
+
+            imgViewProfilePic.setImage(profilePic);
+        });
     }
+
 
 
 

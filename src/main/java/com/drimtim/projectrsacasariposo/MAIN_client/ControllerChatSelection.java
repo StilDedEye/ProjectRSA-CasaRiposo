@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class ControllerChatSelection {
     public static ControllerChatSelection instance;
