@@ -12,6 +12,7 @@ module com.drimtim.projectrsacasariposo {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires java.management;
+    requires javafx.media;
     // Modulo corretto per Selenium
 
     opens com.drimtim.projectrsacasariposo.MAIN_client to javafx.fxml;

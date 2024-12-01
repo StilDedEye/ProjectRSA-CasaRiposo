@@ -1,15 +1,23 @@
 package com.drimtim.projectrsacasariposo.sockets.Utilities;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class Utilities {
+    private static final String pathToScSound = "/com/drimtim/projectrsacasariposo/sounds/notificaSc.mp3";
+    private static final String pathToWhatsappSound = "/com/drimtim/projectrsacasariposo/sounds/notificaWhatsapp.mp3";
+    private static final String pathToOuterWilds = "/com/drimtim/projectrsacasariposo/sounds/notificaOuter.mp3";
+    private static final String pathToBatteriaSound = "/com/drimtim/projectrsacasariposo/sounds/notificaBatteria.mp3";
+
+
 
     public static List<Color> getDominantColors(Image image, int numColors) {
         // Leggi i pixel dall'immagine
@@ -48,5 +56,28 @@ public class Utilities {
         // Calcola un hash e lo converte in un numero nell'intervallo 1-16
         int hash = Math.abs(word.hashCode()); // valore assouluto perchè potrebbe essere negativo
         return ((hash) % 16) + 1;  // resto divisione. con +1 il range va da 1 a 16
+    }
+
+    public static void playSound (String message) {
+        new Thread(() -> {
+            Platform.runLater(() -> {
+                try {
+                    // Load the MP3 file as a resource
+                    String mp3FilePath = Objects.requireNonNull(Utilities.class.getResource(pathToOuterWilds)).toExternalForm();
+                    if (message.equals("sc"))
+                        mp3FilePath = Objects.requireNonNull(Utilities.class.getResource(pathToScSound)).toExternalForm();
+                    else if (message.equals("batteria"))
+                        mp3FilePath = Objects.requireNonNull(Utilities.class.getResource(pathToBatteriaSound)).toExternalForm();
+
+                    // Create Media and MediaPlayer objects
+                    Media media = new Media(mp3FilePath);
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+                    // Play sound
+                    mediaPlayer.play();
+                } catch (NullPointerException e) {}
+            });
+        }).start();
+
     }
 }
