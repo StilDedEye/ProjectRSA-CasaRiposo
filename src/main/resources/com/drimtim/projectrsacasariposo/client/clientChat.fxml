@@ -22,7 +22,7 @@
       <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="32.66667175292969" valignment="CENTER" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <ScrollPane fx:id="scrollPaneVbox" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="354.0" prefWidth="303.0" style="-fx-background-color: transparent;" vbarPolicy="NEVER" vvalue="1.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <ScrollPane fx:id="scrollPaneVbox" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="354.0" prefWidth="303.0" style="-fx-background-color: transparent;" vbarPolicy="NEVER" vvalue="1.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>

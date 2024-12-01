@@ -228,6 +228,8 @@ public class ClientSocket {
             imgViewProfilePic.setFitHeight(50);
             newMessageNotification.graphic(imgViewProfilePic);
             newMessageNotification.show();
+
+            Utilities.playSound(plainText);
         });
     }
 
