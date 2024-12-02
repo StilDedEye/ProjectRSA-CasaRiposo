@@ -5,10 +5,25 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+* Record che memorizza una generica chiave del client
+* @param coprime rappresenta "e" nella chiave pubblica o "d" nella chiave privata
+* @param n il termine comune tra la chiave pubblica e privata
+* */
 public record ClientKey(BigInteger coprime, BigInteger n) {
+    /**
+    * Serializza la chiave comprendente i due numeri in un array di byte.
+    * L'array è composto da 4 byte che indicano la lunghezza in byte di n, seguiti dai byte di n.
+    * In seguito altri 4 byte indicano la grandezza dell'altro numero, mentre i restanti byte rappresentano il numero.
+    * @throws IOException
+    * @return l'array di byte contenente i due numeri che compongono la chiave
+    * */
+
+
     /* Serializza la chiave. Questo la rende adatta ad essere trasmessa lungo lo stream di output e
      * facilita i vari processi di lettura. Basta un solo invio per inviare sia il coprimo sia n ed
-     * il formato di invio è universale (array di byte) */
+     * il formato di invio è universale (array di byte)
+     * */
     // Serializzazione semplificata con DataOutputStream
     public byte[] serializeKey() throws IOException {
         /* conterrà l'array finale di byte  (esempio = [10,50,200,240]. Ogni numero è rappresentato da
@@ -34,6 +49,12 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
         return byteArrayOutputStream.toByteArray();
     }
 
+    /**
+    * Traduce l'array di byte nei due numeri che compongono la chiave
+    * @param key l'array di byte da deserializzare
+    * @throws IOException
+    * @return l'oggetto ClientKey contenente la chiave
+    * */
     public static ClientKey deserializePublicKey(byte[] key) throws IOException {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(key);
         DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
@@ -52,7 +73,16 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
         return new ClientKey(coprime, n);
     }
 
+    /**
+    * Cifra il messaggio usando la chiave pubblica
+    * @param message il messaggio da cifrare
+    * @param e il coprimo
+    * @param n il numero con cui va calcolato il modulo
+    * @return l'array di byte contenente il messaggio cifrato codificato sottoforma di stringa
+    *
+    * */
     public String encryptMessage(String message, BigInteger e, BigInteger n) {
+        // Traduce il messaggio prima in byte, poi converte i byte in un BigInteger
         BigInteger plainText = new BigInteger(1, message.getBytes(StandardCharsets.UTF_8));
 
         BigInteger cypherText = plainText.modPow(e, n);
@@ -62,7 +92,13 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
         return Base64.getEncoder().encodeToString(cypherBytes);
     }
 
-    // CHIAVE PUBBLICA N ed E
+    /**
+    * Decifra il messaggio usando la chiave privata
+    * @param cypherMessage il messaggio cifrato
+    * @param d il numero a cui va elevato il messaggio
+    * @param n il numero con cui va calcolato il modulo
+    * @return il messaggio in chiaro
+    * */
     public String decryptMessage(String cypherMessage, BigInteger d, BigInteger n) {
         // Decodifica il messaggio da Base64
         byte[] cypherBytes = Base64.getDecoder().decode(cypherMessage);

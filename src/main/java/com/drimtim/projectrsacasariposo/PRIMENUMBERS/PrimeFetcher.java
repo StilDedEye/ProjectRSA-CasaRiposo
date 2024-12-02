@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 
 /**
 * Genera i numeri primi p e q e da essi ricava le chiavi pubblica e privata
-*@author Drim Studios
+* @author Drim Studios
 * */
 public class PrimeFetcher {
     /**
