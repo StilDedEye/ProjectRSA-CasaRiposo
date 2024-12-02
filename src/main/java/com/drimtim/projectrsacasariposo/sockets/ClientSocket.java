@@ -11,8 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.controlsfx.control.Notifications;
-
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -73,8 +71,6 @@ public class ClientSocket {
 
         // according to clientsAlreadyConnected, parse with its own list
         parseConnectedClients (clientsAlreadyConnected);
-
-
 
         // start a listening thread with the server
         initializeListeningThread();
@@ -212,7 +208,7 @@ public class ClientSocket {
     }
 
     private void sendNotification (String senderUsername, String plainText) {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             Notifications newMessageNotification = Notifications.create();
             newMessageNotification.position(Pos.BASELINE_RIGHT);
             newMessageNotification.title("Messaggio da " + senderUsername);
