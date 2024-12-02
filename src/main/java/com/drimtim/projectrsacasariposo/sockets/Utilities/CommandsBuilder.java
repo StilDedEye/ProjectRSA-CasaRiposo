@@ -2,7 +2,6 @@ package com.drimtim.projectrsacasariposo.sockets.Utilities;
 
 public class CommandsBuilder {
 
-
     public static boolean isACommand (String message) {
         return message.startsWith(":");
     }
