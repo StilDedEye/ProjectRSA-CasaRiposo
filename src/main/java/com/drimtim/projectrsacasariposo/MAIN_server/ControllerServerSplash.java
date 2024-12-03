@@ -68,11 +68,8 @@ public class ControllerServerSplash {
 
         Thread threadListeningServer = new Thread(() -> {
             try {
-                ServSocket servSocket = new ServSocket();
-                servSocket.initializeListening();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                new ServSocket();
+            } catch (IOException e) {}
         });
         threadListeningServer.setName("threadListeningServer");
         threadListeningServer.start();

@@ -45,7 +45,7 @@ public class ControllerClientSelectionItem {
 
                 MainClient.primaryStage.setScene(scene);
                 MainClient.currentScene=scene;
-                MainClient.primaryStage.setResizable(true);
+                MainClient.primaryStage.setResizable(false);
                 ((ControllerChatClient)fxmlLoader.getController()).loadPreviousMessages();
             } catch (IOException e) {throw new RuntimeException(e);}
         });

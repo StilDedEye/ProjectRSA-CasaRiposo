@@ -1,15 +1,16 @@
 package com.drimtim.projectrsacasariposo.sockets;
 
-import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
-import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatClient;
-import com.drimtim.projectrsacasariposo.MAIN_client.ControllerChatSelection;
+import com.drimtim.projectrsacasariposo.MAIN_client.*;
 import com.drimtim.projectrsacasariposo.PRIMENUMBERS.PrimeFetcher;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.CommandsBuilder;
 import com.drimtim.projectrsacasariposo.sockets.Utilities.Utilities;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.Notifications;
 import java.io.*;
 import java.net.Socket;
@@ -153,7 +154,26 @@ public class ClientSocket {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                if (e.getMessage().equals("Connection reset")) {
+                    Platform.runLater(() -> ControllerChatSelection.instance.updateVboxChats());
+                    parseConnectedClients(username);
+
+                    Platform.runLater(()->{
+                        FXMLLoader fxmlLoader = new FXMLLoader(ControllerClientSplash.class.getResource("/com/drimtim/projectrsacasariposo/client/clientSplash.fxml"));
+                        VBox vBox = null;
+                        try {
+                            vBox = fxmlLoader.load();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        Scene scene = new Scene(vBox);
+
+                        MainClient.primaryStage.setTitle("Client");
+                        MainClient.primaryStage.setScene(scene);
+                        MainClient.currentScene=scene;
+                        MainClient.primaryStage.setResizable(false);
+                    });
+                }
             }
         });
         threadListeningByClient.setName("threadListeningByClient");
