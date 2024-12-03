@@ -13,6 +13,7 @@ import java.util.*;
 public class ServSocket {
     private static int port = 1201;
 
+    public static ServSocket instance;
     public static ServerSocket serverSocket;
 
     // string --> {username, [map]} --> {"socket" socket, "in" in, "out" out}
@@ -20,6 +21,11 @@ public class ServSocket {
     public static List<String> connectedClients = new ArrayList<>(); // it saves only usernames
     public static List<ClientSerializedPublicKey> serializedClientsPublicKeys = new ArrayList<>();
 
+
+    public ServSocket () throws IOException {
+        instance = this;
+        initializeListening();
+    }
     public void initializeListening () throws IOException {
         serverSocket = new ServerSocket(port);
         do {
@@ -74,7 +80,6 @@ public class ServSocket {
             // create and start a thread for each client
             //startPingRequestDaemon(5000, username, in, out);
 // endregion
-
         } while (true);
     }
 
@@ -197,10 +202,21 @@ public class ServSocket {
     private static String getStackTraceAsString(Exception e) {
         // Usa StringWriter e PrintWriter per catturare lo stack trace
         /* lo stringwriter si basa su un buffer, nel quale viene inserito lo stacktrace
-        * e dal contenuto del buffer si può passare poi ad una stringa effettiva*/
+         * e dal contenuto del buffer si può passare poi ad una stringa effettiva*/
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw); // Scrive lo stack trace nel PrintWriter
         return sw.toString();  // Converte il contenuto dello StringWriter in una stringa
+    }
+
+
+    public void closeServer () throws IOException {
+        clients.clear();
+        connectedClients.clear();
+        serializedClientsPublicKeys.clear();
+        sendBroadcastMessage (":updatedClientsList:" + adaptClientListToPrint());
+        serverSocket.close();
+
+
     }
 }
