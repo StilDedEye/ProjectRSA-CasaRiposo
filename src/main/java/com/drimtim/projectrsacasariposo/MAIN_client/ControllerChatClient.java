@@ -1,7 +1,6 @@
 package com.drimtim.projectrsacasariposo.MAIN_client;
 
 import com.drimtim.projectrsacasariposo.sockets.ClientSocket;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -14,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.io.IOException;
@@ -121,7 +119,7 @@ public class ControllerChatClient {
 
         // carica eventuali messaggi già inviati in precedenza
         if (ClientSocket.instance.checkIfUsernameExistsInsideMessages(ClientSocket.instance.receiverUsername)) {
-            for (String message: ClientSocket.instance.allReceivedMessages.get(ClientSocket.instance.receiverUsername)) {
+            for (String message: ClientSocket.instance.allMessages.get(ClientSocket.instance.receiverUsername)) {
                 if (message.substring(0, message.indexOf(":")).equals("sentByMe")) {
                     addMessage(message.substring(message.indexOf(":")+1), true);
                 } else {
