@@ -264,7 +264,11 @@ public class ServSocket {
         return -1;
     }
 
-
+    /**
+     * Ritorna il messaggio di un'eccezione come stringa
+     * @param e Eccezione
+     * @return Messaggio dell'eccezione come stringa
+     */
     private static String getStackTraceAsString(Exception e) {
         // Usa StringWriter e PrintWriter per catturare lo stack trace
         /* lo stringwriter si basa su un buffer, nel quale viene inserito lo stacktrace
@@ -275,7 +279,10 @@ public class ServSocket {
         return sw.toString();  // Converte il contenuto dello StringWriter in una stringa
     }
 
-
+    /**
+     * Interrompa il server
+     * @throws IOException
+     */
     public void closeServer () throws IOException {
         clients.clear();
         connectedClients.clear();
