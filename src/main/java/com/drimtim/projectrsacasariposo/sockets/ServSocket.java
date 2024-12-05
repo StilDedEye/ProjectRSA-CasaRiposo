@@ -280,7 +280,7 @@ public class ServSocket {
     }
 
     /**
-     * Interrompa il server
+     * Interrompe il server
      * @throws IOException
      */
     public void closeServer () throws IOException {
