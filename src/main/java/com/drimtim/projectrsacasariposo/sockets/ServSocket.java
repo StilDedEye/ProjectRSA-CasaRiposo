@@ -44,7 +44,7 @@ public class ServSocket {
     public static List<String> connectedClients = new ArrayList<>(); // it saves only usernames
 
     /**
-     * Lista delle chiavi serializzate degli utenti
+     * Lista delle chiavi sotto forma di array di byte degli utenti
      */
     public static List<ClientSerializedPublicKey> serializedClientsPublicKeys = new ArrayList<>();
 
