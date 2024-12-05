@@ -18,31 +18,101 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Classe che gestisce la comunicazione lato client.
+ */
 public class ClientSocket {
+    /**
+     * Istanza statica della classe ClientSocket
+     */
     public static ClientSocket instance = new ClientSocket();
 
+    /**
+     * Username dell'utente
+     */
     private String username;
+
+    /**
+     * Indirizzo IP dell'utente
+     */
     private String ip;
+
+    /**
+     * Porta utilizzata dall'utente per la comunicazione col server
+     */
     private int port;
 
+    /**
+     * Lista degli username di tutti gli utenti connessi al server
+     */
     public List<String> connectedClients = new ArrayList<String>(); // it saves only usernames
 
+    /**
+     * Porta utilizzata dal server
+     */
     private int serverPort;
+
+    /**
+     * Indirizzo IP del server
+     */
     private String serverIp;
+
+    /**
+     * Socket composto da indirizzo IP e porta del server
+     */
     private Socket serverSocket;
+
     private BufferedReader in;
     private PrintWriter out;
+
+    /**
+     * Stream utilizzato per la trasmissione dei dati relativi alle chiavi
+     */
     private DataOutputStream dataOut;
 
+    /**
+     * Chiave pubblica dell'utente
+     */
     private ClientKey publicKey;
-        private byte[] serializedPublicKey;
+
+    /**
+     * Chiave pubblica dell'utente sotto forma di Array di Byte.
+     * La chiave viene trasformata in Array di Byte per poterla inviare
+     */
+    private byte[] serializedPublicKey;
+
+    /**
+     * Chiave privata dell'utente
+     */
     private ClientKey privateKey;
 
+    /**
+     * Chiave pubblica dell'utente con cui si sta comunicando
+     */
     private ClientKey receiverPublicKey;
-    public String receiverUsername;
-    public Map<String, List<String>> allReceivedMessages = new HashMap<>();
-    public Map<String, List<String>> allSentMessages = new HashMap<>();
 
+    /**
+     * Username dell'utente con cui si sta comunicando
+     */
+    public String receiverUsername;
+
+    /**
+     * Mappa contenente:<br>
+     * - Chiave: Username dell'utente<br>
+     * - Campo: Messaggi inviati e ricevuti da quell'utente<br>
+     */
+    public Map<String, List<String>> allMessages = new HashMap<>();
+
+    /**
+     * Istanzia il socket per la comunicazione col server:<br>
+     *  - Invia lo username al server<br>
+     *  - Genera la chiave pubblica e privata<br>
+     *  - Invia la chiave pubblica al server<br>
+     *  - Riceve dal server la lista di tutti i client connessi
+     * @return True se l'username scelto non è già stato utilizzato<br>
+     * False se l'username scelto è già stato utilizzato
+     * @throws IOException
+     */
     public boolean configureServerSocket () throws IOException {
         serverSocket = new Socket(serverIp, serverPort);
         in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.UTF_8));
@@ -79,6 +149,15 @@ public class ClientSocket {
         return true;
     }
 
+    /**
+     * Inizializza il Thread per ascoltare messaggi in arrivo dal server o da altri client<br>
+     * Classifica il messaggio in base al suo prefisso:<br>
+     *  - Comandi (':'):
+     *      - pingRequest: Richiesta e risposta di ping<br>
+     *      - updatedClientList: Lista degli username aggiornata<br>
+     *      - publicKeyIncoming: Ricezione della chiave da parte di un client<br>
+     *  - Messaggi ('!')
+     */
     private void initializeListeningThread () {
         Thread threadListeningByClient = new Thread(()->{
             try {
@@ -124,9 +203,9 @@ public class ClientSocket {
                         // controlla se nella mappa dei messaggi ha già questo username
                         if (checkIfUsernameExistsInsideMessages (senderUsername)) {
                             // lo tiene, aggiorna la mappa
-                            List<String> l = allReceivedMessages.get(senderUsername);
+                            List<String> l = allMessages.get(senderUsername);
                             l.add("sentByOther:"+plainText);
-                            allReceivedMessages.put(senderUsername, l);
+                            allMessages.put(senderUsername, l);
 
 
                             // se si trova già nella chat, printa il messaggio
@@ -143,7 +222,7 @@ public class ClientSocket {
                         } else {
                             List <String> l = new ArrayList<>();
                             l.add("sentByOther:"+plainText);
-                            allReceivedMessages.put(senderUsername, l);
+                            allMessages.put(senderUsername, l);
                             if (receiverUsername!=null && receiverUsername.equals(senderUsername)) {
                                 // se è il client con il quale sta chattando, lo printa a schermo
                                 Platform.runLater(()->{
@@ -181,17 +260,28 @@ public class ClientSocket {
 
     }
 
+    /**
+     * Cripta il messaggio<br>
+     * Salva il messaggio nella lista allMessages <br>
+     * Invia il messaggio con un prefisso:
+     * <blockquote>
+     * <pre>
+     * out.println("!"+usernameDestinatario +"!?"+usernameMittente+"?:" + messaggioCifrato);
+     * </pre>
+     * </blockquote>
+     * @param plainText Testo in chiaro del messaggio
+     */
     public void sendMessageToClient(String plainText) {
         if (checkIfUsernameExistsInsideMessages (receiverUsername)) {
             // lo tiene, aggiorna la mappa
-            List<String> l = allReceivedMessages.get(receiverUsername);
+            List<String> l = allMessages.get(receiverUsername);
             l.add("sentByMe:"+plainText);
-            allReceivedMessages.put(receiverUsername, l);
+            allMessages.put(receiverUsername, l);
         //se non esiste nella mappa il client, allora lo crea e aggiunge il messaggio
         } else {
             List <String> l = new ArrayList<>();
             l.add("sentByMe:"+plainText);
-            allReceivedMessages.put(receiverUsername, l);
+            allMessages.put(receiverUsername, l);
         }
 
 
@@ -201,17 +291,26 @@ public class ClientSocket {
         out.flush();
     }
 
-    public void sendMessageToServer (String command) {
-        out.println(command);
+    /**
+     * Invia comunicazioni al server
+     * @param message Messaggio da inviare
+     */
+    public void sendMessageToServer (String message) {
+        out.println(message);
     }
 
-
+    /**
+     * Riceve la lista degli utenti connessi dal server ed aggiorna quella attuale
+     * @param clientsListAsString Stringa contente tutti gli username degli utenti connessi separati da: ','
+     */
     private void parseConnectedClients (String clientsListAsString) {
         connectedClients = new ArrayList<>(Arrays.asList(clientsListAsString.split(",")));
         connectedClients.remove(username);  // the client removes itself by the list
     }
 
-
+    /**
+     * Genera la chiave pubblica e privata
+     */
     private void generatePrivatePublicKeys () {
         PrimeFetcher keyGenerator = new PrimeFetcher();
         ClientKey[] keys = keyGenerator.generateKeys();  // [public,private]
@@ -223,10 +322,20 @@ public class ClientSocket {
         } catch (Exception e) {e.printStackTrace();}
     }
 
+    /**
+     * Controlla se lo username è già presente nella lista dei messaggi
+     * @param username Username da controllare
+     * @return <blockquote><pre>allMessages.get(username) != null</pre></blockquote>
+     */
     public boolean checkIfUsernameExistsInsideMessages (String username) {
-        return allReceivedMessages.get(username) != null;
+        return allMessages.get(username) != null;
     }
 
+    /**
+     * Mostra la notifica alla ricezione di un messaggio
+     * @param senderUsername Username del mittente
+     * @param plainText Messaggio in chiaro
+     */
     private void sendNotification (String senderUsername, String plainText) {
         Platform.runLater(() -> {
             Notifications newMessageNotification = Notifications.create();
@@ -248,15 +357,6 @@ public class ClientSocket {
             Utilities.playSound(plainText);
         });
     }
-
-
-
-
-
-
-
-
-
 
 
 

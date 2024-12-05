@@ -14,12 +14,12 @@ import java.security.SecureRandom;
 * @author Drim Studios
 * */
 public class PrimeFetcher {
+
     /**
      * Genera la chiave pubblica (e,n) e la chiave privata (d,n)
      *
      * @return il vettore di record di tipo ClientKey contenente le due chiavi
      */
-
     public ClientKey[] generateKeys() {
         SecureRandom random = new SecureRandom();
 
@@ -55,7 +55,6 @@ public class PrimeFetcher {
      * @param m Il numero su cui va calcolato il coprimo
      * @return il coprimo, di tipo BigInteger
      * */
-
     public static BigInteger findCoprime (BigInteger m){
         BigInteger e = BigInteger.valueOf(65537); // Valore standard usato nella maggior parte dei casi
         if (!m.gcd(e).equals(BigInteger.ONE)) { // calcolo MCD tra e ed m, se esce 1 va bene come coprimo
