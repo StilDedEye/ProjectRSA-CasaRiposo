@@ -1,0 +1,6 @@
+module:com.drimtim.projectrsacasariposo
+com.drimtim.projectrsacasariposo.MAIN_client
+com.drimtim.projectrsacasariposo.MAIN_server
+com.drimtim.projectrsacasariposo.PRIMENUMBERS
+com.drimtim.projectrsacasariposo.sockets
+com.drimtim.projectrsacasariposo.sockets.Utilities

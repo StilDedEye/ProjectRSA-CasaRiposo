@@ -18,5 +18,7 @@ module com.drimtim.projectrsacasariposo {
     opens com.drimtim.projectrsacasariposo.MAIN_client to javafx.fxml;
     exports com.drimtim.projectrsacasariposo.MAIN_server;
     exports com.drimtim.projectrsacasariposo.MAIN_client;
+    exports com.drimtim.projectrsacasariposo.PRIMENUMBERS;
+    exports com.drimtim.projectrsacasariposo.sockets;
     opens com.drimtim.projectrsacasariposo.MAIN_server to javafx.fxml;
 }
