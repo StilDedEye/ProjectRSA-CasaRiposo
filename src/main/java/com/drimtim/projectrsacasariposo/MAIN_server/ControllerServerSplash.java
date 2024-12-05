@@ -40,7 +40,7 @@ public class ControllerServerSplash {
 
     @FXML
     protected void onCopyClicked () throws Exception {
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(InetAddress.getLocalHost().getHostAddress() +":1201"), null);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(InetAddress.getLocalHost().getHostAddress() +ServSocket.port), null);
 
 
         new Thread(()->{
