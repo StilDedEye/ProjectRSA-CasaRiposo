@@ -18,10 +18,6 @@ public record ClientKey(BigInteger coprime, BigInteger n) {
     * @throws IOException
     * @return l'array di byte contenente i due numeri che compongono la chiave
     * */
-    /* Serializza la chiave. Questo la rende adatta ad essere trasmessa lungo lo stream di output e
-     * facilita i vari processi di lettura. Basta un solo invio per inviare sia il coprimo sia n ed
-     * il formato di invio è universale (array di byte)
-     * */
     // Serializzazione semplificata con DataOutputStream
     public byte[] serializeKey() throws IOException {
         /* conterrà l'array finale di byte  (esempio = [10,50,200,240]. Ogni numero è rappresentato da

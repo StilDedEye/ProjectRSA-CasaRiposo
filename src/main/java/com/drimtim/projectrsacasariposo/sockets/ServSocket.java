@@ -10,22 +10,54 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * Classe che gestisce la comunicazione lato server.
+ */
 public class ServSocket {
+
+    /**
+     * Porta utilizzata dal server per la comunicazione coi client
+     */
     private static int port = 1201;
 
+    /**
+     * Istanza statica della classe ServSocket
+     */
     public static ServSocket instance;
+
+    /**
+     * Socket del server per accettare richieste da parte degli utenti
+     */
     public static ServerSocket serverSocket;
 
     // string --> {username, [map]} --> {"socket" socket, "in" in, "out" out}
+    /**
+     * Mappa contenente:<br>
+     *  -Chiave: Username dell'utente<br>
+     *  -Campo: Mappa contenente il socket e gli stream di input e output dell'utente
+     */
     public static Map<String, Map<String, Object>> clients = new HashMap<>();
-    public static List<String> connectedClients = new ArrayList<>(); // it saves only usernames
-    public static List<ClientSerializedPublicKey> serializedClientsPublicKeys = new ArrayList<>();
 
+    /**
+     * Lista contenente tutti gli username degli utenti attualmente connessi
+     */
+    public static List<String> connectedClients = new ArrayList<>(); // it saves only usernames
+
+    /**
+     * Lista delle chiavi serializzate degli utenti
+     */
+    public static List<ClientSerializedPublicKey> serializedClientsPublicKeys = new ArrayList<>();
 
     public ServSocket () throws IOException {
         instance = this;
         initializeListening();
     }
+
+    /**
+     * Riceve richieste di connessioni da parte degli utenti, rifiutandole se l'username inserito è già stato utilizzato<br>
+     * Una volta stabilita la connessione con l'utente riceve la chiave pubblica
+     * @throws IOException
+     */
     public void initializeListening () throws IOException {
         serverSocket = new ServerSocket(port);
         do {
@@ -84,6 +116,15 @@ public class ServSocket {
     }
 
 
+    /**
+     * Inizializza il Thread per ascoltare messaggi in arrivo dai client<br>
+     * Classifica il messaggio in base al suo prefisso:<br>
+     *  - Comandi (':'):
+     *      - pingRequest: Richiesta e risposta di ping<br>
+     *      - publicKeyIncoming: Ricezione della chiave da parte di un client<br>
+     *  - Messaggi ('!')
+     * @throws IOException
+     */
     private void startListeningThread (String username, BufferedReader in, PrintWriter out) {
         Thread threadListeningByServer = new Thread(() -> {
             try {
@@ -149,6 +190,14 @@ public class ServSocket {
         threadListeningByServer.start();
     }
 
+    /**
+     * Invia una richiesta di ping a un utente
+     * @deprecated Utilizzato per debugging
+     * @param millis intervallo tra le richieste in millisecondi
+     * @param username username dell'utente
+     * @param in stream di input dell'utente
+     * @param out stream di output dell'utente
+     */
     private void startPingRequestDaemon (long millis, String username, BufferedReader in, PrintWriter out) {
         Thread threadPingRequestDaemon = new Thread(()->{
             while (true) {
@@ -164,6 +213,10 @@ public class ServSocket {
         threadPingRequestDaemon.start();
     }
 
+    /**
+     * Formatta la lista degli username di client in una stringa in formato csv
+     * @return Stringa csv degli username dei client
+     */
     private String adaptClientListToPrint () {
         StringBuilder output = new StringBuilder();  // it should be "username1,username2,username3,username4,... etc"
         if (connectedClients.isEmpty())
@@ -174,6 +227,10 @@ public class ServSocket {
         return output.toString();
     }
 
+    /**
+     * Invia un messaggio a tutti gli utenti connessi
+     * @param message Messaggio da inviare
+     */
     private void sendBroadcastMessage (String message) {
         for (String username: connectedClients) {
             PrintWriter out = (PrintWriter) clients.get(username).get("out");
@@ -181,6 +238,10 @@ public class ServSocket {
         }
     }
 
+    /**
+     * Rimuove l'utente dalla lista degli username degli utenti
+     * @param username Username da rimuovere
+     */
     private void removeClientFromAnyList (String username) {
         clients.remove(username);
         connectedClients.remove(username);
@@ -189,6 +250,11 @@ public class ServSocket {
 
     /* se ritorna -1, vuol dire che l'username del client del quale si vuole sapere la chiave
     non è registrato nel server*/
+    /**
+     * Ritorna l'indice della chiave di un utente nella di chiavi in base al suo username
+     * @param username Username dell'utente
+     * @return Chiave dell'utente se l'utente è presente nella lista<br>-1 se l'utente non è presente nella lista
+     */
     private int getPublicKeyIndex (String username) {
         for (ClientSerializedPublicKey serializedClientsPublicKey : serializedClientsPublicKeys) {
             if (serializedClientsPublicKey.username().equals(username)) {
@@ -216,7 +282,5 @@ public class ServSocket {
         serializedClientsPublicKeys.clear();
         sendBroadcastMessage (":updatedClientsList:" + adaptClientListToPrint());
         serverSocket.close();
-
-
     }
 }
