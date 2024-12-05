@@ -14,12 +14,11 @@ import java.util.*;
  * Classe che gestisce la comunicazione lato server.
  */
 public class ServSocket {
-
     /**
      * Porta utilizzata dal server per la comunicazione coi client
      */
-    private static int port = 1201;
-
+    public static int port = 12122;
+  
     /**
      * Istanza statica della classe ServSocket
      */

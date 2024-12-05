@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="TOP_CENTER" prefHeight="157.0" prefWidth="366.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_server.ControllerServerSplash">
+<VBox alignment="TOP_CENTER" prefHeight="219.0" prefWidth="366.0" spacing="5.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.drimtim.projectrsacasariposo.MAIN_server.ControllerServerSplash">
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
@@ -21,22 +21,22 @@
             <Font name="Arial Black" size="28.0" />
          </font>
       </Text>
-      <Text fx:id="textServerName" strokeType="OUTSIDE" strokeWidth="0.0" text="{hostname}">
+      <Text fx:id="textServerName" strokeType="OUTSIDE" strokeWidth="0.0" text="{hostname}" textAlignment="CENTER" wrappingWidth="111.38154602050781">
          <font>
-            <Font name="Arial" size="12.0" />
+            <Font name="Arial Bold" size="12.0" />
          </font>
          <VBox.margin>
-            <Insets bottom="10.0" top="-7.0" />
+            <Insets bottom="10.0" />
          </VBox.margin>
       </Text>
-      <Text fx:id="textAddress" strokeType="OUTSIDE" strokeWidth="0.0" text="{xxx.xxx.x.x:1201}">
+      <Text fx:id="textAddressLocal" strokeType="OUTSIDE" strokeWidth="0.0" text="{xxx.xxx.x.x:12122}" textAlignment="CENTER" wrappingWidth="127.0">
          <font>
             <Font name="Arial" size="12.0" />
          </font>
       </Text>
       <StackPane>
          <children>
-            <ImageView fx:id="imgViewCopy" fitHeight="14.0" fitWidth="15.0" onMouseClicked="#onCopyClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgViewCopyLocal" fitHeight="14.0" fitWidth="15.0" onMouseClicked="#onCopyClickedLocal" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../other/interface/icons/duplicate.png" />
                </image>
@@ -49,7 +49,30 @@
             </ImageView>
          </children>
       </StackPane>
-      <Button fx:id="btnAvvia" mnemonicParsing="false" onAction="#onStartClicked" text="Avvia" />
+      <Text fx:id="textAddressPublic" strokeType="OUTSIDE" strokeWidth="0.0" text="{xxx.xxx.x.x:12122}" textAlignment="CENTER" wrappingWidth="127.0">
+         <font>
+            <Font name="Arial" size="12.0" />
+         </font>
+      </Text>
+      <StackPane>
+         <children>
+            <ImageView fx:id="imgViewCopyPublic" fitHeight="14.0" fitWidth="15.0" onMouseClicked="#onCopyClickedPublic" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../other/interface/icons/duplicate.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <StackPane.margin>
+                  <Insets left="150.0" top="-25.0" />
+               </StackPane.margin>
+            </ImageView>
+         </children>
+      </StackPane>
+      <Button fx:id="btnAvvia" mnemonicParsing="false" onAction="#onStartClicked" text="Avvia">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin></Button>
       <FlowPane alignment="BOTTOM_RIGHT" prefHeight="13.0" prefWidth="326.0">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="by Drim Studios" textAlignment="CENTER">
@@ -58,6 +81,9 @@
                </font>
             </Text>
          </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </FlowPane>
    </children>
 </VBox>
