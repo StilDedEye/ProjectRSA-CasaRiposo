@@ -1,14 +1,12 @@
 package com.drimtim.projectrsacasariposo.MAIN_server;
 
-import com.drimtim.projectrsacasariposo.MAIN_client.ControllerClientSplash;
-import com.drimtim.projectrsacasariposo.MAIN_client.MainClient;
 import com.drimtim.projectrsacasariposo.sockets.ServSocket;
+import com.drimtim.projectrsacasariposo.sockets.Utilities.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
@@ -19,40 +17,59 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.util.Enumeration;
 
 public class ControllerServerSplash {
     @FXML
-    public Text textAddress;
+    public Text textAddressLocal;
+    @FXML
+    public Text textAddressPublic;
     @FXML
     public Button btnAvvia;
     @FXML
     public Text textServerName;
     @FXML
-    public ImageView imgViewCopy;
+    public ImageView imgViewCopyLocal;
+    @FXML
+    public ImageView imgViewCopyPublic;
 
 
     @FXML
     public void initialize () throws UnknownHostException {
-        textAddress.setText(Inet4Address.getLocalHost().getHostAddress()+":"+ServSocket.port);
+        textAddressLocal.setText(" Local "+Inet4Address.getLocalHost().getHostAddress()+":"+ServSocket.port);
+        textAddressPublic.setText(" Public "+getPublicIP()+":"+ServSocket.port);
         textServerName.setText(InetAddress.getLocalHost().getHostName());
     }
 
     @FXML
-    protected void onCopyClicked () throws Exception {
+    protected void onCopyClickedLocal() throws Exception {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(InetAddress.getLocalHost().getHostAddress() + ":" +ServSocket.port), null);
-
 
         new Thread(()->{
             try {
-                String a = textAddress.getText();
-                Paint p = textAddress.getFill();
-                textAddress.setText("Copied");
-                textAddress.setFill(Paint.valueOf("#05993e"));
-                Thread.sleep(2000);
-                textAddress.setText(a);
-                textAddress.setFill(p);
-            } catch (Exception e) {}
+                String a = textAddressLocal.getText();
+                Paint p = textAddressLocal.getFill();
+                textAddressLocal.setText("Copied");
+                textAddressLocal.setFill(Paint.valueOf("#05993e"));
+                Thread.sleep(1000);
+                textAddressLocal.setText(a);
+                textAddressLocal.setFill(p);
+            } catch (Exception ignored) {}
+        }).start();
+    }
+
+    @FXML
+    protected void onCopyClickedPublic() {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getPublicIP()+":"+ServSocket.port), null);
+        new Thread(()->{
+            try {
+                String a = textAddressPublic.getText();
+                Paint p = textAddressPublic.getFill();
+                textAddressPublic.setText("Copied");
+                textAddressPublic.setFill(Paint.valueOf("#05993e"));
+                Thread.sleep(1000);
+                textAddressPublic.setText(a);
+                textAddressPublic.setFill(p);
+            } catch (Exception ignored) {}
         }).start();
     }
 
@@ -69,7 +86,7 @@ public class ControllerServerSplash {
         Thread threadListeningServer = new Thread(() -> {
             try {
                 new ServSocket();
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
         });
         threadListeningServer.setName("threadListeningServer");
         threadListeningServer.start();
@@ -91,8 +108,8 @@ public class ControllerServerSplash {
 
             return publicIP;
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Errore nel recupero dell'indirizzo IP";
+            Logger.log(e.getMessage(), Logger.EXCEPTION);
+            return "####.####.####.####";
         }
     }
 }
