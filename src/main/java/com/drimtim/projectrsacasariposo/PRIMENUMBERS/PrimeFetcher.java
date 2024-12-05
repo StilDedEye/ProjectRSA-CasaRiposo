@@ -2,7 +2,11 @@ package com.drimtim.projectrsacasariposo.PRIMENUMBERS;
 
 import com.drimtim.projectrsacasariposo.MAIN_client.ClientKey;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.SecureRandom;
 
 /**
@@ -43,7 +47,7 @@ public class PrimeFetcher {
     }
 
     public static void main(String[] args) {
-        // Metodo per trovare un e coprimo con m
+
     }
 
     /**

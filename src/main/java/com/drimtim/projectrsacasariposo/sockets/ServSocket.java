@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ServSocket {
-    private static int port = 1201;
+    public static int port = 12122;
 
     public static ServSocket instance;
     public static ServerSocket serverSocket;

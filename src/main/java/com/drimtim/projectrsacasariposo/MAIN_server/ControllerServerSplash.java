@@ -34,7 +34,7 @@ public class ControllerServerSplash {
 
     @FXML
     public void initialize () throws UnknownHostException {
-        textAddress.setText(Inet4Address.getLocalHost().getHostAddress()+":3000");
+        textAddress.setText(Inet4Address.getLocalHost().getHostAddress()+":"+ServSocket.port);
         textServerName.setText(InetAddress.getLocalHost().getHostName());
     }
 
@@ -73,5 +73,26 @@ public class ControllerServerSplash {
         });
         threadListeningServer.setName("threadListeningServer");
         threadListeningServer.start();
+    }
+
+    public static String getPublicIP() {
+        String url = "https://checkip.amazonaws.com"; // Servizio per ottenere l'indirizzo pubblico
+        try {
+            // Creazione della connessione
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            // Lettura della risposta
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String publicIP = reader.readLine();
+            reader.close();
+
+            return publicIP;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Errore nel recupero dell'indirizzo IP";
+        }
     }
 }
