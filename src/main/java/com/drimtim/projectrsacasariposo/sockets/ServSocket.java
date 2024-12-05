@@ -55,7 +55,7 @@ public class ServSocket {
 
     /**
      * Riceve richieste di connessioni da parte degli utenti, rifiutandole se l'username inserito è già stato utilizzato<br>
-     * Una volta stabilita la connessione con l'utente riceve la chiave pubblica
+     * Una volta stabilita la connessione con l'utente riceve la sua chiave pubblica
      * @throws IOException
      */
     public void initializeListening () throws IOException {
